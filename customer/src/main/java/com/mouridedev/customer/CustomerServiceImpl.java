@@ -2,10 +2,11 @@ package com.mouridedev.customer;
 
 import com.mouridedev.clients.fraud.FraudCheckResponse;
 import com.mouridedev.clients.fraud.FraudClient;
+import com.mouridedev.clients.notification.NotificationClient;
+import com.mouridedev.clients.notification.NotificationRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
@@ -14,6 +15,7 @@ public class CustomerServiceImpl implements CustomerService {
 
   private final CustomerRepository customerRepository;
   private final FraudClient fraudClient;
+  private final NotificationClient notificationClient;
   @Override
   public void registerCustomer(final CustomerRegistrationRequest customerRegistrationRequest) {
     Customer customer = Customer.builder()
@@ -32,7 +34,14 @@ public class CustomerServiceImpl implements CustomerService {
       throw new IllegalStateException("fraudster");
     }
 
-    //todo: send notification
+    // send notification
+    notificationClient.sendNotification(
+        NotificationRequest.builder()
+            .toCustomerEmail(customer.getEmail())
+            .toCustomerId(customer.getId())
+            .message(String.format("Hi %s, welcome to Mouride Dev...", customer.getFirstName()))
+            .build()
+    );
 
   }
 }

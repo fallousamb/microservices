@@ -14,6 +14,8 @@
   <url>http://www.example.com</url>
   <modules>
     <module>customer</module>
+      <module>fraud</module>
+    <module>eureka-server</module>
   </modules>
 
   <properties>
@@ -22,6 +24,7 @@
     <maven.compiler.target>17</maven.compiler.target>
     <spring.boot.maven.plugin.version>3.0.4</spring.boot.maven.plugin.version>
     <spring.boot.dependecies.version>3.0.4</spring.boot.dependecies.version>
+    <spring.cloud-version>2022.0.1</spring.cloud-version>
   </properties>
 
   <dependencyManagement>
@@ -30,6 +33,13 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-dependencies</artifactId>
         <version>${spring.boot.dependecies.version}</version>
+        <scope>import</scope>
+        <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.springframework.cloud</groupId>
+        <artifactId>spring-cloud-dependencies</artifactId>
+        <version>${spring.cloud-version}</version>
         <scope>import</scope>
         <type>pom</type>
       </dependency>

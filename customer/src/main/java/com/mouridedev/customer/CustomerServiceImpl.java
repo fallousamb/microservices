@@ -3,13 +3,15 @@ package com.mouridedev.customer;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
 @Service
 @Slf4j
 @AllArgsConstructor
 public class CustomerServiceImpl implements CustomerService {
 
-  private CustomerRepository customerRepository;
+  private final CustomerRepository customerRepository;
+  private final RestTemplate restTemplate;
   @Override
   public void registerCustomer(final CustomerRegistrationRequest customerRegistrationRequest) {
     Customer customer = Customer.builder()
@@ -20,6 +22,19 @@ public class CustomerServiceImpl implements CustomerService {
     //todo: check if email is valid
     //todo: check if email is not token
     //todo: check if customer is db
-    customerRepository.save(customer);
+
+    customerRepository.saveAndFlush(customer);
+    // check if customer is fraudster
+    FraudCheckResponse fraudCheckResponse = restTemplate.getForObject(
+        "http://FRAUD/api/v1/fraud-check/{customerId}",
+        FraudCheckResponse.class,
+        customer.getId()
+    );
+    if (fraudCheckResponse.getIsFraudster()) {
+      throw new IllegalStateException("fraudster");
+    }
+
+    //todo: send notification
+
   }
 }

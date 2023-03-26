@@ -1,4 +1,4 @@
-package com.mouridedev.fraud;
+package com.mouridedev.clients.fraud;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -15,8 +15,24 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
+  zipkin:
+    base-url: https://localhost:9411
 
 eureka:
   client:
     service-url:
       defaultZone: http://localhost:8761/eureka
+
+#logging:
+#  pattern:
+#    level= %5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]
+#  level:
+#    org:
+#      springframework:
+#        web: DEBUG
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+

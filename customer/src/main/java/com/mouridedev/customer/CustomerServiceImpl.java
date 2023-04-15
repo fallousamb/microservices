@@ -1,8 +1,8 @@
 package com.mouridedev.customer;
 
+import com.mouridedev.amqp.RabbitMQMessageProducer;
 import com.mouridedev.clients.fraud.FraudCheckResponse;
 import com.mouridedev.clients.fraud.FraudClient;
-import com.mouridedev.clients.notification.NotificationClient;
 import com.mouridedev.clients.notification.NotificationRequest;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,7 @@ public class CustomerServiceImpl implements CustomerService {
 
   private final CustomerRepository customerRepository;
   private final FraudClient fraudClient;
-  private final NotificationClient notificationClient;
+  private final RabbitMQMessageProducer rabbitMQMessageProducer;
   @Override
   public void registerCustomer(final CustomerRegistrationRequest customerRegistrationRequest) {
     Customer customer = Customer.builder()
@@ -34,14 +34,16 @@ public class CustomerServiceImpl implements CustomerService {
       throw new IllegalStateException("fraudster");
     }
 
-    // send notification
-    notificationClient.sendNotification(
-        NotificationRequest.builder()
-            .toCustomerEmail(customer.getEmail())
-            .toCustomerId(customer.getId())
-            .message(String.format("Hi %s, welcome to Mouride Dev...", customer.getFirstName()))
-            .build()
+    final NotificationRequest notificationRquest = new NotificationRequest(
+        customer.getId(),
+        customer.getEmail(),
+        String.format("Hi %s, welcome to Mouride Dev...", customer.getFirstName())
     );
-
+    //Send to amqp
+    rabbitMQMessageProducer.publish(
+        notificationRquest,
+        "internal.exchange",
+        "internal.notification.routing-key"
+        );
   }
 }

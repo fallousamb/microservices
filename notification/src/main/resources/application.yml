@@ -17,6 +17,8 @@ spring:
     show-sql: true
   zipkin:
     base-url: https://localhost:9411
+  rabbitmq:
+    addresses: localhost:5672
 eureka:
   client:
     service-url:
@@ -36,4 +38,13 @@ management:
   tracing:
     sampling:
       probability: 1.0
+
+rabbitmq:
+  exchanges:
+    internal: internal.exchange
+  queues:
+    notification: notification.queue
+  routing-keys:
+    internal-notification: internal.notification.routing-key
+
 

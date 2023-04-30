@@ -4,19 +4,19 @@ spring:
   application:
     name: notification
   datasource:
-    url: jdbc:postgresql://localhost:5432/notification
     password: password
+    url: jdbc:postgresql://localhost:5432/notification
     username: fallou
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
         format_sql: true
     show-sql: true
   zipkin:
-    base-url: https://localhost:9411
+    base-url: http://localhost:9411
   rabbitmq:
     addresses: localhost:5672
 eureka:
@@ -26,18 +26,13 @@ eureka:
     fetch-registry: true
     register-with-eureka: true
 
-#logging:
-#  pattern:
-#    level= %5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]
-#  level:
-#    org:
-#      springframework:
-#        web: DEBUG
-
 management:
   tracing:
     sampling:
       probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
 
 rabbitmq:
   exchanges:
@@ -47,4 +42,6 @@ rabbitmq:
   routing-keys:
     internal-notification: internal.notification.routing-key
 
-
+logging:
+  pattern:
+    console: "%clr(%d{HH:mm:ss.SSS}){blue} %clr(---){cyan} %clr([%15.15t]){yellow} %clr(:){red} %clr(%m){magenta}%n"
